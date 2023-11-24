@@ -22,8 +22,7 @@ y = np.array(iris['Species'])
 # 70% entrenamiento y 30% prueba
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30)
 print("Datos de entrenamiento y prueba creados")
-print("Son {} datos para entrenamiento y {} datos para prueba"
-      .format(X_train.shape[0], X_test.shape[0]))
+print("Son {} datos para entrenamiento y {} datos para prueba".format(X_train.shape[0], X_test.shape[0]))
 
 # Clasificador de distancia mínima
 class ClasificadorDistanciaMinima:
@@ -55,9 +54,7 @@ y_pred = min_distance.predict(X_test)
 
 # Calcular la precisión del modelo en los datos de prueba
 accuracy = np.mean(y_pred == y_test)
-print("Precisión de la clasificación de distancia mínima: {}"
-      .format(accuracy))
-
+print("Precisión de la clasificación de distancia mínima: {}".format(accuracy))
 
 # Método de validación Leave-One-Out (LOO)
 n_samples = len(X)
@@ -85,5 +82,3 @@ for i in range(n_samples):
 accuracy_loo = correct_predictions_loo / n_samples
 print("Precisión Distancia Minima (Leave-One-Out): {}"
       .format(accuracy_loo))
-
-

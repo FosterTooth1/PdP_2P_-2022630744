@@ -17,7 +17,8 @@ iris = pd.read_csv("irisne.csv")
 X = iris.drop('Species', axis=1).values
 y = np.array(iris['Species'])
 
-# Separar los datos de "train" en entrenamiento y prueba para probar los algoritmos
+# Separar los datos de "train" en entrenamiento 
+# y prueba para probar los algoritmos
 # 70% entrenamiento y 30% prueba
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30)
 print("Datos de entrenamiento y prueba creados")
