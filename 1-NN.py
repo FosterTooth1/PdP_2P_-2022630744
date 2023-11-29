@@ -24,64 +24,42 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30)
 print("Datos de entrenamiento y prueba creados")
 print("Son {} datos para entrenamiento y {} datos para prueba".format(X_train.shape[0], X_test.shape[0]))
 
-# Clasificador de 1-NN
-class clasificador_1NN:
-    def __init__(self):
-        self.X_train = None
-        self.y_train = None
-        
+# Clasificador KNN
+class ClasificadorKNN:
+    def __init__(self, n_neighbors=1):
+        self.n_neighbors = n_neighbors
+
     def fit(self, X, y):
         self.X_train = X
         self.y_train = y
-    
+
     def predict(self, X):
         y_pred = []
         for sample in X:
-            min_distance = float('inf')
-            nearest_label = None
+            distances = []
             for i, train_sample in enumerate(self.X_train):
                 distance = distancia_euclidiana(sample, train_sample)
-                if distance < min_distance:
-                    min_distance = distance
-                    nearest_label = self.y_train[i]
-            y_pred.append(nearest_label)
+                distances.append((distance, self.y_train[i]))
+            
+            distances.sort(key=lambda x: x[0])
+            neighbors = distances[:self.n_neighbors]
+            neighbor_labels = [neighbor[1] for neighbor in neighbors]
+            prediction = max(set(neighbor_labels), key=neighbor_labels.count)
+            y_pred.append(prediction)
         return y_pred
 
-# Crear una instancia del clasificador 1-NN
-one_nn = clasificador_1NN()
+# Pedir al usuario el número de vecinos a considerar
+n_neighbors_input = int(input("Introduce el número de vecinos a considerar: "))
+
+# Crear una instancia del clasificador KNN con el número de vecinos especificado
+knn_classifier = ClasificadorKNN(n_neighbors=n_neighbors_input)
 
 # Entrenar el clasificador con los datos de entrenamiento
-one_nn.fit(X_train, y_train)
+knn_classifier.fit(X_train, y_train)
 
 # Realizar predicciones en los datos de prueba
-y_pred = one_nn.predict(X_test)
+y_pred = knn_classifier.predict(X_test)
 
 # Calcular la precisión del modelo en los datos de prueba
-accuracy = sum(y_pred == y_test) / len(y_test)
-print("Precisión 1-NN (H-O 70E/30P): {}".format(accuracy))
-
-# Método de validación Leave-One-Out (LOO)
-n_samples = len(X)
-correct_predictions = 0
-
-for i in range(n_samples):
-    X_train_loo = np.delete(X, i, axis=0)
-    y_train_loo = np.delete(y, i)
-    X_test_loo = X[i].reshape(1, -1)
-    y_test_loo = y[i]
-
-    # Crear una instancia del clasificador 1-NN para LOO
-    one_nn_loo = clasificador_1NN()
-
-    # Entrenar el clasificador con los datos de entrenamiento para LOO
-    one_nn_loo.fit(X_train_loo, y_train_loo)
-
-    # Realizar predicciones en el dato de prueba para LOO
-    y_pred_loo = one_nn_loo.predict(X_test_loo)
-
-    # Comparar la etiqueta predicha con la etiqueta real para LOO
-    if y_pred_loo[0] == y_test_loo:
-        correct_predictions += 1
-
-accuracy_loo = correct_predictions / n_samples
-print("Precisión 1-NN (Leave-One-Out): {}".format(accuracy_loo))
+accuracy = np.mean(y_pred == y_test)
+print("Precisión del clasificador KNN con {} vecinos: {}".format(n_neighbors_input, accuracy))
